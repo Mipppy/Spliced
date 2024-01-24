@@ -20,5 +20,23 @@ def home():
 def createfile():
     textdata = request.form.get("text").split(" ")
     character = request.form.get("character")
-    print(textdata)
+    textdata = filter('\n',filter('\r\n',filter(None,textdata)))
+    characterVoiceFiles = db.execute("SELECT voicelines.file, voicelines.name FROM character JOIN voicelines ON voicelines.character = character.name WHERE character.name = ?", character)
+    neededFiles = []
+    arrayOfFiles = []
+    notFoundWords =[]
+    fullWords = []
+    for key in characterVoiceFiles:
+        arrayOfFiles.append(key)
+    for array in arrayOfFiles:
+        for string in textdata:
+            if str(array['name']).lower() == str(string).lower():
+                neededFiles.append(array['file'])
+                fullWords.append(array['file'])
+            else:
+                notFoundWords.append(str(string).lower())
+                fullWords.append(str(string).lower())
+    print(fullWords)
+    for string2 in notFoundWords:
+        
     return redirect("/")
