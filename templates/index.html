@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Home Page
+{% endblock %}
+
+{% block main %}
+
+<form method="post" action="/createaudio">
+    <select name="character">
+        <option disabled selected="true">Character</option>
+        {% for name in characters %}
+            <option>{{name['name']}}</option>
+        {% endfor%}
+    </select>
+    <textarea name="text">
+
+    </textarea>
+    <button>Generate audio file</button>
+</form>
+{% endblock %}
