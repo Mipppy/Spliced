@@ -18,9 +18,10 @@ def home():
     
 @app.route("/createaudio", methods=["POST"])
 def createfile():
-    textdata = request.form.get("text").split(" ")
+    textdata = request.form.get("text")
+    textdata = ' '.join(filter(None, textdata.replace('\r\n', ' ').split('\n')))
+    textdata = [word for word in textdata.split(" ") if word] 
     character = request.form.get("character")
-    textdata = filter('\n',filter('\r\n',filter(None,textdata)))
     characterVoiceFiles = db.execute("SELECT voicelines.file, voicelines.name FROM character JOIN voicelines ON voicelines.character = character.name WHERE character.name = ?", character)
     neededFiles = []
     arrayOfFiles = []
@@ -28,15 +29,18 @@ def createfile():
     fullWords = []
     for key in characterVoiceFiles:
         arrayOfFiles.append(key)
-    for array in arrayOfFiles:
+    arrayIter = iter(arrayOfFiles)
+    for array in arrayIter:
         for string in textdata:
             if str(array['name']).lower() == str(string).lower():
                 neededFiles.append(array['file'])
                 fullWords.append(array['file'])
+                next(arrayIter,'')
+                next(arrayIter,'')
             else:
                 notFoundWords.append(str(string).lower())
                 fullWords.append(str(string).lower())
+                next(arrayIter,'')
+                next(arrayIter,'')
     print(fullWords)
-    for string2 in notFoundWords:
-        
     return redirect("/")
