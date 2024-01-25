@@ -23,10 +23,7 @@ def createfile():
     textdata = [word for word in textdata.split(" ") if word] 
     character = request.form.get("character")
     characterVoiceFiles = db.execute("SELECT voicelines.file, voicelines.name FROM character JOIN voicelines ON voicelines.character = character.name WHERE character.name = ?", character)
-    neededFiles = []
-    arrayOfFiles = []
-    notFoundWords =[]
-    fullWords = []
+    neededFiles,arrayOfFiles,notFoundWords,fullWords,neededSubAudioFiles,finalList = [],[],[],[],[],[]
     for key in characterVoiceFiles:
         arrayOfFiles.append(key)
     arrayIter = list(arrayOfFiles)
@@ -43,5 +40,27 @@ def createfile():
         if found == False:    
             notFoundWords.append(str(string).lower())
             fullWords.append(str(string).lower())
-    print(fullWords)
+    for word in notFoundWords:
+        subList = [word]
+        for char in word:
+            if char == None or char == "":
+                continue
+            subList.append(subList.append(char + ".mp3"))
+        
+        neededSubAudioFiles.append(list(filter(None, subList)))        
+    for word in fullWords:
+        found = False
+        finalArr = []
+        otherArr = []
+        for arr in neededSubAudioFiles:
+            if str(arr[0]) == word:
+                finalArr = arr
+                found = True
+        if found == True:
+            finalArr.pop(0)
+            for smallLoopToSaveTimeLater in finalArr:
+                otherArr.append(smallLoopToSaveTimeLater)
+            finalList.append("".join(finalArr))                
+        else:
+            finalList.append(word)
     return redirect("/")
