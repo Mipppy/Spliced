@@ -29,18 +29,19 @@ def createfile():
     fullWords = []
     for key in characterVoiceFiles:
         arrayOfFiles.append(key)
-    arrayIter = iter(arrayOfFiles)
-    for array in arrayIter:
-        for string in textdata:
+    arrayIter = list(arrayOfFiles)
+    arrayIter2 = list(textdata)
+    for string in arrayIter2:
+        found = False
+        for array in arrayIter:
+            if found == True:
+                continue
             if str(array['name']).lower() == str(string).lower():
                 neededFiles.append(array['file'])
                 fullWords.append(array['file'])
-                next(arrayIter,'')
-                next(arrayIter,'')
-            else:
-                notFoundWords.append(str(string).lower())
-                fullWords.append(str(string).lower())
-                next(arrayIter,'')
-                next(arrayIter,'')
+                found = True
+        if found == False:    
+            notFoundWords.append(str(string).lower())
+            fullWords.append(str(string).lower())
     print(fullWords)
     return redirect("/")
