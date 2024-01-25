@@ -50,17 +50,18 @@ def createfile():
         neededSubAudioFiles.append(list(filter(None, subList)))        
     for word in fullWords:
         found = False
-        finalArr = []
-        otherArr = []
+        finalArr,otherArray = [],[]
         for arr in neededSubAudioFiles:
             if str(arr[0]) == word:
                 finalArr = arr
                 found = True
         if found == True:
             finalArr.pop(0)
-            for smallLoopToSaveTimeLater in finalArr:
-                otherArr.append(smallLoopToSaveTimeLater)
-            finalList.append("".join(finalArr))                
+            for arr in finalArr:
+                finalList.append(arr)
+            finalList.append("")                
         else:
             finalList.append(word)
+            finalList.append("")
+    print(finalList)
     return redirect("/")
