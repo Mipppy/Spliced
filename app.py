@@ -1,7 +1,8 @@
 from flask import Flask, render_template, redirect, request,session, flash
 from flask_session import Session
 from cs50 import SQL
-
+import os,wave
+dir_path = os.path.dirname(os.path.realpath(__file__))
 app = Flask(__name__)
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
@@ -45,12 +46,13 @@ def createfile():
         for char in word:
             if char == None or char == "":
                 continue
-            subList.append(subList.append(char + ".mp3"))
+            subList.append(subList.append(char + ".wav"))
         
         neededSubAudioFiles.append(list(filter(None, subList)))        
     for word in fullWords:
         found = False
-        finalArr,otherArray = [],[]
+        print(dir_path+'\\voiceclips\\'+character+'\\.wav')
+        finalArr,otherArray,finalSound = [],[],""
         for arr in neededSubAudioFiles:
             if str(arr[0]) == word:
                 finalArr = arr
@@ -63,5 +65,20 @@ def createfile():
         else:
             finalList.append(word)
             finalList.append("")
-    print(finalList)
+    concatenate_audio_wave(finalList, "concatFiles\\out.wav",character)
     return redirect("/")
+
+def concatenate_audio_wave(audio_clip_paths, output_path,character):
+    data = []
+    for clip in audio_clip_paths:
+        if clip == "":
+            clip = ".wav"
+        print(f"{dir_path}\\voiceclips\\{character}\\"+clip)
+        w = wave.open(f"{dir_path}\\voiceclips\\{character}\\"+clip, "rb")
+        data.append([w.getparams(), w.readframes(w.getnframes())])
+        w.close()
+    output = wave.open(output_path, "wb")
+    output.setparams(data[0][0])
+    for i in range(len(data)):
+        output.writeframes(data[i][1])
+    output.close()
