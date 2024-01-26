@@ -5,18 +5,28 @@
 {% endblock %}
 
 {% block main %}
-
-    <audio></audio>
-<form method="post" action="/createaudio">
-    <select name="character">
-        <option disabled selected="true">Character</option>
-        {% for name in characters %}
-            <option>{{name['name']}}</option>
-        {% endfor%}
-    </select>
-    <textarea name="text">
-
-    </textarea>
-    <button>Generate audio file</button>
-</form>
+{% if error %}
+<header>
+    <div class="alert alert-primary mb-0 text-center" role="alert">
+        Error: {{ error}}
+    </div>
+</header>
+{%endif %}
+<div class="container mt-5">
+    <form method="post" action="/createaudio">
+        <div class="mb-3">
+            <label for="character" class="form-label">Character</label>
+            <select name="character" id="character" class="form-select" required>
+                {% for name in characters %}
+                    <option>{{ name['name'] }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="text" class="form-label">Text</label>
+            <textarea name="text" id="text" class="form-control" rows="3" required maxlength="400" placeholder="Enter text here..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Generate Audio File</button>
+    </form>
+</div>
 {% endblock %}
