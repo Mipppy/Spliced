@@ -1,7 +1,7 @@
-from flask import Flask, render_template, redirect, request,session, flash
+from flask import Flask, render_template, redirect, request,session, flash, send_file
 from flask_session import Session
 from cs50 import SQL
-import os,wave
+import os,wave,random,string
 dir_path = os.path.dirname(os.path.realpath(__file__))
 app = Flask(__name__)
 app.config["SESSION_PERMANENT"] = False
@@ -29,18 +29,18 @@ def createfile():
         arrayOfFiles.append(key)
     arrayIter = list(arrayOfFiles)
     arrayIter2 = list(textdata)
-    for string in arrayIter2:
+    for string1 in arrayIter2:
         found = False
         for array in arrayIter:
             if found == True:
                 continue
-            if str(array['name']).lower() == str(string).lower():
+            if str(array['name']).lower() == str(string1).lower():
                 neededFiles.append(array['file'])
                 fullWords.append(array['file'])
                 found = True
         if found == False:    
-            notFoundWords.append(str(string).lower())
-            fullWords.append(str(string).lower())
+            notFoundWords.append(str(string1).lower())
+            fullWords.append(str(string1).lower())
     for word in notFoundWords:
         subList = [word]
         for char in word:
@@ -51,7 +51,6 @@ def createfile():
         neededSubAudioFiles.append(list(filter(None, subList)))        
     for word in fullWords:
         found = False
-        print(dir_path+'\\voiceclips\\'+character+'\\.wav')
         finalArr,otherArray,finalSound = [],[],""
         for arr in neededSubAudioFiles:
             if str(arr[0]) == word:
@@ -65,15 +64,15 @@ def createfile():
         else:
             finalList.append(word)
             finalList.append("")
-    concatenate_audio_wave(finalList, "concatFiles\\out.wav",character)
-    return redirect("/")
+    randIntFor = ''.join(random.choices(string.ascii_uppercase + string.digits, k=100))
+    concatenate_audio_wave(finalList, f"concatFiles\\{randIntFor}.wav",character)
+    return send_file(f"concatFiles\\{randIntFor}.wav", as_attachment=True)
 
 def concatenate_audio_wave(audio_clip_paths, output_path,character):
     data = []
     for clip in audio_clip_paths:
         if clip == "":
             clip = ".wav"
-        print(f"{dir_path}\\voiceclips\\{character}\\"+clip)
         w = wave.open(f"{dir_path}\\voiceclips\\{character}\\"+clip, "rb")
         data.append([w.getparams(), w.readframes(w.getnframes())])
         w.close()
